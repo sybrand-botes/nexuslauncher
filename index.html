@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Launcher — Coming Soon</title>
+  <meta name="description" content="Nexus Launcher — the smart game collection organiser. Point it at a folder and let it do the rest." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nexus Launcher — Coming Soon" />
+  <meta property="og:description" content="The smart game collection organiser. Point it at a folder and let it do the rest." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0a0c10;
+      --surface:    #111420;
+      --surface2:   #181d2e;
+      --border:     #1e2540;
+      --accent:     #6c63ff;
+      --accent2:    #a78bfa;
+      --glow:       rgba(108, 99, 255, 0.35);
+      --text:       #e4e6f0;
+      --muted:      #7a80a0;
+      --radius:     14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glowing orb behind hero ── */
+    .orb {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,99,255,.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: .8; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;  transform: translateX(-50%) scale(1.08); }
+    }
+
+    /* ── Layout ── */
+    main {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── Nav / logo ── */
+    nav {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.8rem 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 18px var(--glow);
+    }
+
+    .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+    .badge {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border: 1px solid var(--border);
+      padding: .25rem .7rem;
+      border-radius: 99px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      margin-top: 5rem;
+      text-align: center;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .coming-soon-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      background: rgba(108,99,255,.12);
+      border: 1px solid rgba(108,99,255,.3);
+      padding: .35rem 1rem;
+      border-radius: 99px;
+    }
+
+    .coming-soon-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .2; }
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ── Notify form ── */
+    .notify-form {
+      display: flex;
+      gap: .65rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .notify-form input[type="email"] {
+      flex: 1;
+      min-width: 200px;
+      padding: .8rem 1.1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .notify-form input[type="email"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.15);
+    }
+
+    .notify-form input[type="email"]::placeholder { color: var(--muted); }
+
+    .btn-primary {
+      padding: .8rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .2s, transform .15s;
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    .btn-primary:hover  { opacity: .9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .form-note {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    /* ── Mock-up window ── */
+    .mockup-wrap {
+      margin-top: 5rem;
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+    }
+
+    .mockup-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at 50% 60%, rgba(108,99,255,.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .window {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.6);
+      position: relative;
+    }
+
+    .window-bar {
+      background: var(--surface2);
+      padding: .8rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+
+    .window-bar .traffic { width: 12px; height: 12px; border-radius: 50%; }
+
+    .window-bar .path-bar {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .28rem .75rem;
+      font-size: .75rem;
+      color: var(--muted);
+      margin-left: .75rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .window-body {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 360px;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 1rem .75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+
+    .sidebar-label {
+      font-size: .65rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: .5rem .6rem .2rem;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .5rem .65rem;
+      border-radius: 8px;
+      font-size: .82rem;
+      color: var(--muted);
+      cursor: default;
+    }
+
+    .sidebar-item.active {
+      background: rgba(108,99,255,.15);
+      color: var(--text);
+    }
+
+    .sidebar-item .icon { font-size: 1rem; }
+
+    .game-grid {
+      padding: 1.2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: .9rem;
+      align-content: start;
+    }
+
+    .game-card {
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      transition: transform .15s;
+      cursor: default;
+    }
+
+    .game-card:hover { transform: translateY(-3px); }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 3/4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .game-title {
+      padding: .3rem .4rem .45rem;
+      font-size: .68rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* colour palettes for placeholder art */
+    .c1 { background: linear-gradient(135deg, #1a0533, #6c2fa0); }
+    .c2 { background: linear-gradient(135deg, #0d2137, #1a6fa8); }
+    .c3 { background: linear-gradient(135deg, #0f2a1a, #1a7a3c); }
+    .c4 { background: linear-gradient(135deg, #2a1200, #a05010); }
+    .c5 { background: linear-gradient(135deg, #1a0a0a, #a02020); }
+    .c6 { background: linear-gradient(135deg, #0a1a2a, #205080); }
+
+    /* ── Features ── */
+    .features {
+      margin-top: 6rem;
+      width: 100%;
+      max-width: 1000px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(108,99,255,.4);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 11px;
+      background: rgba(108,99,255,.15);
+      display: grid;
+      place-items: center;
+      font-size: 1.3rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Section heading ── */
+    .section-title {
+      margin-top: 6rem;
+      text-align: center;
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+    }
+
+    .section-sub {
+      margin-top: .6rem;
+      color: var(--muted);
+      font-size: .95rem;
+      text-align: center;
+      max-width: 520px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 100%;
+      max-width: 1000px;
+      height: 1px;
+      background: var(--border);
+      margin-top: 6rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    footer a { color: var(--accent2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Success message ── */
+    .success-msg {
+      display: none;
+      font-size: .9rem;
+      color: #4ade80;
+      background: rgba(74,222,128,.1);
+      border: 1px solid rgba(74,222,128,.25);
+      padding: .65rem 1.2rem;
+      border-radius: var(--radius);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .window-body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      nav .badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb" aria-hidden="true"></div>
+
+  <nav>
+    <a href="#" class="logo" aria-label="Nexus Launcher home">
+      <div class="logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M10 2L2 6v8l8 4 8-4V6L10 2zm0 2.18L16 7.5v5.18l-6 3-6-3V7.5l6-3.32z"/>
+        </svg>
+      </div>
+      Nexus Launcher
+    </a>
+    <span class="badge" aria-label="Status: Coming Soon">Coming Soon</span>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ── -->
+    <section class="hero" aria-labelledby="hero-heading">
+
+      <div class="coming-soon-pill" role="status" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span>
+        In Development
+      </div>
+
+      <h1 id="hero-heading">
+        Your game collection,<br />
+        <span>finally organised.</span>
+      </h1>
+
+      <p class="tagline">
+        Point Nexus Launcher at any folder on your machine and watch your
+        entire library snap into a beautiful, searchable collection — no
+        manual tagging, no fuss.
+      </p>
+
+      <p class="form-note">Be the first to know when we launch.</p>
+
+    </section>
+
+    <!-- ── App mock-up ── -->
+    <div class="mockup-wrap" aria-hidden="true">
+      <div class="mockup-glow"></div>
+      <div class="window" role="img" aria-label="Nexus Launcher application preview">
+        <div class="window-bar">
+          <span class="traffic dot-r"></span>
+          <span class="traffic dot-y"></span>
+          <span class="traffic dot-g"></span>
+          <span class="path-bar">~/Games &nbsp;·&nbsp; 42 games detected</span>
+        </div>
+        <div class="window-body">
+          <nav class="sidebar" aria-label="Library categories">
+            <span class="sidebar-label">Library</span>
+            <div class="sidebar-item active"><span class="icon">🎮</span> All Games</div>
+            <div class="sidebar-item"><span class="icon">⭐</span> Favourites</div>
+            <div class="sidebar-item"><span class="icon">🕓</span> Recent</div>
+            <span class="sidebar-label">Genres</span>
+            <div class="sidebar-item"><span class="icon">⚔️</span> RPG</div>
+            <div class="sidebar-item"><span class="icon">🔫</span> Action</div>
+            <div class="sidebar-item"><span class="icon">🧩</span> Puzzle</div>
+            <div class="sidebar-item"><span class="icon">🏎️</span> Racing</div>
+          </nav>
+          <div class="game-grid" role="list">
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c1">🗡️</div>
+              <div class="game-title">Dark Rift</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c2">🚀</div>
+              <div class="game-title">Stellar Drift</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c3">🌲</div>
+              <div class="game-title">Wildlands</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c4">🔥</div>
+              <div class="game-title">Inferno Run</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c5">💀</div>
+              <div class="game-title">Voidwalker</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c6">🏙️</div>
+              <div class="game-title">Neon City</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c1">🧙</div>
+              <div class="game-title">Arcane Keep</div>
+            </div>
+            <div class="game-card" role="listitem">
+              <div class="game-thumb c4">🏎️</div>
+              <div class="game-title">Apex Roads</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Features heading ── -->
+    <h2 class="section-title" id="features-heading">
+      Everything your library needs
+    </h2>
+    <p class="section-sub">
+      Nexus Launcher handles the heavy lifting so you can spend less time
+      managing and more time playing.
+    </p>
+
+    <!-- ── Feature cards ── -->
+    <section class="features" aria-labelledby="features-heading">
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">📂</div>
+        <h3>Folder-first scanning</h3>
+        <p>
+          Drop in any folder path — local drives, external disks, network
+          shares — and Nexus will scan, detect, and catalogue every game it
+          finds automatically.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">🗃️</div>
+        <h3>Smart organisation</h3>
+        <p>
+          Games are automatically grouped by genre, platform, and metadata.
+          Custom tags and collections let you organise things your way on
+          top of that.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">⚡</div>
+        <h3>One-click launch</h3>
+        <p>
+          No more hunting through File Explorer. Every game in your library
+          is one click away — Nexus remembers the executable so you never
+          have to.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">🔍</div>
+        <h3>Instant search</h3>
+        <p>
+          Find any title in milliseconds with full-text search across game
+          names, genres, tags, and your own notes.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">📊</div>
+        <h3>Play-time tracking</h3>
+        <p>
+          Nexus quietly logs how long you've played each title, giving you
+          a clear picture of what you're actually enjoying.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" aria-hidden="true">🎨</div>
+        <h3>Rich metadata &amp; art</h3>
+        <p>
+          Cover art, descriptions, and ratings are fetched automatically,
+          turning a plain folder list into a visually rich library.
+        </p>
+      </div>
+
+    </section>
+
+    <div class="divider" aria-hidden="true"></div>
+
+  </main>
+
+  <footer>
+    <p>
+      &copy; 2026 Nexus Launcher. All rights reserved.
+      &nbsp;·&nbsp;
+      Built with ❤️ for gamers everywhere.
+    </p>
+  </footer>
+
+  <!-- Notify form removed per request -->
+
+</body>
+</html>
